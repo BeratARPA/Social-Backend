@@ -24,7 +24,7 @@ jobs:
       run: dotnet test Social-Backend.sln
 
     - name: Publish Api
-      run: dotnet publish Social-Backend/Social.API/Social.API.csproj -c Release -o ./publish/Api
+      run: dotnet publish Social.API/Social.API.csproj -c Release -o ./publish/Api
 
     - name: Deploy Api
       run: |

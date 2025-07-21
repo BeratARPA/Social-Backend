@@ -1,4 +1,4 @@
-﻿using AuthService.Dtos;
+﻿using AuthService.Data.Entities;
 using System.Linq.Expressions;
 
 namespace AuthService.Data.Repositories

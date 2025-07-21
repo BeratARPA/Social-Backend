@@ -1,5 +1,5 @@
-﻿using AuthService.Data.UnitOfWork;
-using AuthService.Dtos;
+﻿using AuthService.Data.Entities;
+using AuthService.Data.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

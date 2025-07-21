@@ -1,6 +1,6 @@
 ﻿namespace AuthService.Data.Entities
 {
-    public class UserCredential
+    public class UserCredential : BaseEntity
     {
     }
 }

@@ -1,6 +1,5 @@
 ﻿using AuthService.Data.Entities;
 using AuthService.Data.UnitOfWork;
-using AuthService.Dtos;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,11 +39,6 @@ namespace AuthService.Data
                 await _mediator.Publish(domainEvent);
 
             return true;
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            //modelBuilder.ApplyConfiguration(new UserEntityConfigurations());
         }
     }
 }

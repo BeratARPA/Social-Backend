@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace AuthService.Dtos
+namespace AuthService.Data.Entities
 {
     public abstract class BaseEntity
     {

@@ -1,6 +1,6 @@
 ﻿namespace AuthService.Data.Entities
 {
-    public class RefreshToken
+    public class RefreshToken : BaseEntity
     {
     }
 }

@@ -9,7 +9,7 @@
 	<ItemGroup>
 		<Folder Include="Commands\Logout\" />
 		<Folder Include="Commands\Register\" />
-		<Folder Include="EventHandlers\" />
+		<Folder Include="Events\Handlers\" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -16,4 +16,8 @@
     <Folder Include="Extensions\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\src\Modules\AuthService\AuthService.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -4,8 +4,8 @@ namespace AuthService.Data.Entities
 {
     public abstract class BaseEntity
     {
-        public Guid Id { get; protected set; }
-        public DateTime CreatedAt { get; protected set; }
+        public Guid Id { get; protected set; } = Guid.NewGuid();
+        public DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
 
         private List<INotification> domainEvents;
         public IReadOnlyCollection<INotification> DomainEvents => domainEvents?.AsReadOnly();

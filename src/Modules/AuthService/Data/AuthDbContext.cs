@@ -9,16 +9,25 @@ namespace AuthService.Data
     {
         private readonly IMediator _mediator;
 
-        public AuthDbContext() : base() { }
-
         public AuthDbContext(DbContextOptions<AuthDbContext> options, IMediator mediator)
-            : base(options)
-        {
-            _mediator = mediator;
-        }
+            : base(options) => _mediator = mediator;
 
         public DbSet<UserCredential> UserCredentials { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserCredential>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
+            modelBuilder.Entity<UserCredential>()
+                .HasMany(u => u.RefreshTokens)
+                .WithOne(r => r.UserCredential)
+                .HasForeignKey(r => r.UserCredentialId);
+        }
 
         public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)
         {
@@ -40,5 +49,8 @@ namespace AuthService.Data
 
             return true;
         }
+
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+            => await base.SaveChangesAsync(cancellationToken);
     }
 }

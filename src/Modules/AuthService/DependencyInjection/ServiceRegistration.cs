@@ -1,4 +1,5 @@
 ﻿using AuthService.Data;
+using AuthService.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,7 +16,7 @@ namespace AuthService.DependencyInjection
                 options.EnableSensitiveDataLogging();
             });
 
-            //services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITokenService, TokenService>();
 
             var optionsBuilder = new DbContextOptionsBuilder<AuthDbContext>()
                 .UseSqlServer(configuration.GetConnectionString("DefaultConnection"));

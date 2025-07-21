@@ -9,11 +9,12 @@
 	<ItemGroup>
 		<Folder Include="Commands\Logout\" />
 		<Folder Include="Commands\Register\" />
-		<Folder Include="Data\" />
-		<Folder Include="Events\" />
-		<Folder Include="Models\" />
-		<Folder Include="Services\" />
-		<Folder Include="Queries\" />
+		<Folder Include="EventHandlers\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="MediatR" Version="13.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
 	</ItemGroup>
 
 </Project>

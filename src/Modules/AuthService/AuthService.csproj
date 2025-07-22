@@ -7,10 +7,21 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
 	  <PackageReference Include="MediatR" Version="13.0.0" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
 	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.7" />
 	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.7" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.7" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="auth.settings.Development.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="auth.settings.Production.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

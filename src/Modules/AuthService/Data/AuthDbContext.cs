@@ -9,9 +9,11 @@ namespace AuthService.Data
     {
         private readonly IMediator _mediator;
 
-        public AuthDbContext(DbContextOptions<AuthDbContext> options, IMediator mediator)
-            : base(options) => _mediator = mediator;
+        public AuthDbContext() : base() { }
 
+        public AuthDbContext(DbContextOptions<AuthDbContext> options, IMediator mediator)
+             : base(options) => _mediator = mediator;
+      
         public DbSet<UserCredential> UserCredentials { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 

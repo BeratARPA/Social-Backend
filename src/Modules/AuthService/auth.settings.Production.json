@@ -2,7 +2,7 @@
   "Jwt": {
     "Issuer": "https://api.iscsocial.com",
     "Audience": "https://api.iscsocial.com",
-    "Key": "YOUR_SUPER_SECRET_KEY"
+    "Key": "Xz48!d3Vp7jK2qNp@RmPL9vA#5nB@tG0"
   },
   "ConnectionStrings": {
     "DefaultConnection": "Server=BERAT-DESKTOP;Database=AuthDB;User Id=sa;Password=isc12345;TrustServerCertificate=True;"

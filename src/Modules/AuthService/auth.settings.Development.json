@@ -1,14 +1,10 @@
 {
-  "Logging": {
-    "LogLevel": {
-      "Default": "Information",
-      "Microsoft.AspNetCore": "Warning"
-    }
-  },
   "Jwt": {
     "Issuer": "https://api.iscsocial.com",
     "Audience": "https://api.iscsocial.com",
     "Key": "Xz48!d3Vp7jK2qNp@RmPL9vA#5nB@tG0"
   },
-  "AllowedHosts": "*"
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=.\\SQLEXPRESS;Database=AuthDB;User Id=sa;Password=isc12345;TrustServerCertificate=True;"
+  }
 }

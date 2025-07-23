@@ -2,6 +2,7 @@
 using AuthService.Data.Repositories;
 using AuthService.Dtos;
 using AuthService.Services;
+using ExceptionHandling.Exceptions;
 using MediatR;
 
 namespace AuthService.Commands.TokenRefresh
@@ -27,11 +28,11 @@ namespace AuthService.Commands.TokenRefresh
             var refresh = await _refreshTokenRepository.FirstOrDefaultAsync(r => r.Token == request.RefreshToken);
 
             if (refresh == null || refresh.ExpiresAt < DateTime.UtcNow || refresh.IsRevoked)
-                throw new UnauthorizedAccessException("Geçersiz ya da süresi dolmuş refresh token");
+                throw new UnauthorizedException("Geçersiz ya da süresi dolmuş refresh token");
 
             var user = await _userRepository.GetByIdAsync(refresh.UserCredentialId);
             if (user == null)
-                throw new Exception("Kullanıcı bulunamadı");
+                throw new NotFoundException("Kullanıcı bulunamadı");
 
             var newAccessToken = _tokenService.GenerateAccessToken(user);
             var newRefreshToken = _tokenService.GenerateRefreshToken();

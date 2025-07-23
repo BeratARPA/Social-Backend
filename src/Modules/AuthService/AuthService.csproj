@@ -16,6 +16,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\BuildingBlocks\ExceptionHandling\ExceptionHandling.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <None Update="auth.settings.Development.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>

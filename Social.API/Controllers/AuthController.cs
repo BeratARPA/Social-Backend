@@ -46,8 +46,9 @@ namespace Social.API.Controllers
         [HttpPost("logout")]
         public async Task<IActionResult> Logout([FromBody] LogoutRequestDto requestDto)
         {
-            await _mediator.Send(new LogoutCommand(requestDto.RefreshToken));
-            return NoContent();
+            var command = new LogoutCommand(requestDto.RefreshToken);
+            var result = await _mediator.Send(command);
+            return Ok(result);
         }
     }
 }

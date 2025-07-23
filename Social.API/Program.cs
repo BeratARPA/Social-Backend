@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using Prometheus;
 using System.Text;
 using System.Text.Json;
+using ExceptionHandling.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -85,8 +86,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+app.UseGlobalExceptionMiddleware();
 
+app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

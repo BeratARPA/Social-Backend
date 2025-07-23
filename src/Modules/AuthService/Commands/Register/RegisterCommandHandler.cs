@@ -3,6 +3,7 @@ using AuthService.Data.Repositories;
 using AuthService.Dtos;
 using AuthService.Events;
 using AuthService.Services;
+using ExceptionHandling.Exceptions;
 using MediatR;
 
 namespace AuthService.Commands.Register
@@ -30,7 +31,7 @@ namespace AuthService.Commands.Register
         {
             var exists = await _userRepository.ExistsAsync(x => x.Username == request.Username);
             if (exists)
-                throw new Exception("Bu kullanıcı adı zaten alınmış.");
+                throw new ValidationException("Bu kullanıcı adı zaten alınmış.");
 
             var user = new UserCredential
             {

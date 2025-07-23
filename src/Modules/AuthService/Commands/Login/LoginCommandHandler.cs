@@ -2,6 +2,7 @@
 using AuthService.Data.Repositories;
 using AuthService.Dtos;
 using AuthService.Services;
+using ExceptionHandling.Exceptions;
 using MediatR;
 
 namespace AuthService.Commands.Login
@@ -26,7 +27,7 @@ namespace AuthService.Commands.Login
         {
             var user = await _userRepository.FirstOrDefaultAsync(u => u.Username == request.Username);
             if (user == null || !PasswordHasher.Verify(request.Password, user.PasswordHash))
-                throw new UnauthorizedAccessException("Kullanıcı adı veya şifre hatalı");
+                throw new ValidationException("Kullanıcı adı veya şifre hatalı");
 
             var accessToken = _tokenService.GenerateAccessToken(user);
             var refreshToken = _tokenService.GenerateRefreshToken();

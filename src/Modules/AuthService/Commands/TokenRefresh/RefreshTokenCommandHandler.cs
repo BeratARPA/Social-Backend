@@ -28,11 +28,11 @@ namespace AuthService.Commands.TokenRefresh
             var refresh = await _refreshTokenRepository.FirstOrDefaultAsync(r => r.Token == request.RefreshToken);
 
             if (refresh == null || refresh.ExpiresAt < DateTime.UtcNow || refresh.IsRevoked)
-                throw new UnauthorizedException("Geçersiz ya da süresi dolmuş refresh token");
+                throw new UnauthorizedException("InvalidOrExpiredRefreshToken");
 
             var user = await _userRepository.GetByIdAsync(refresh.UserCredentialId);
             if (user == null)
-                throw new NotFoundException("Kullanıcı bulunamadı");
+                throw new NotFoundException("UserNotFound");
 
             var newAccessToken = _tokenService.GenerateAccessToken(user);
             var newRefreshToken = _tokenService.GenerateRefreshToken();

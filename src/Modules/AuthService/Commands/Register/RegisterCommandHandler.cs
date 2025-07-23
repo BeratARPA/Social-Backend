@@ -31,7 +31,7 @@ namespace AuthService.Commands.Register
         {
             var exists = await _userRepository.ExistsAsync(x => x.Username == request.Username);
             if (exists)
-                throw new ValidationException("Bu kullanıcı adı zaten alınmış.");
+                throw new ValidationException("UsernameAlreadyExists");
 
             var user = new UserCredential
             {

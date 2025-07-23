@@ -27,7 +27,7 @@ namespace AuthService.Commands.Login
         {
             var user = await _userRepository.FirstOrDefaultAsync(u => u.Username == request.Username);
             if (user == null || !PasswordHasher.Verify(request.Password, user.PasswordHash))
-                throw new ValidationException("Kullanıcı adı veya şifre hatalı");
+                throw new ValidationException("InvalidCredentials");
 
             var accessToken = _tokenService.GenerateAccessToken(user);
             var refreshToken = _tokenService.GenerateRefreshToken();

@@ -27,8 +27,11 @@ namespace AuthService.Commands.TokenRefresh
         {
             var refresh = await _refreshTokenRepository.FirstOrDefaultAsync(r => r.Token == request.RefreshToken);
 
-            if (refresh == null || refresh.ExpiresAt < DateTime.UtcNow || refresh.IsRevoked)
+            if (refresh == null || refresh.IsExpired || refresh.IsRevoked)
                 throw new UnauthorizedException("InvalidOrExpiredRefreshToken");
+
+            if (refresh.ReplacedByToken != null || refresh.IsRevoked)
+                throw new UnauthorizedException("RefreshTokenReuseDetected");
 
             var user = await _userRepository.GetByIdAsync(refresh.UserCredentialId);
             if (user == null)
@@ -38,12 +41,17 @@ namespace AuthService.Commands.TokenRefresh
             var newRefreshToken = _tokenService.GenerateRefreshToken();
 
             refresh.IsRevoked = true;
+            refresh.RevokedAt = DateTime.UtcNow;
+            refresh.ReplacedByToken = newRefreshToken;
+            refresh.RevokedByIp = request.IpAddress;
 
             await _refreshTokenRepository.AddAsync(new RefreshToken
             {
+                UserCredentialId = user.Id,
                 Token = newRefreshToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
-                UserCredentialId = user.Id
+                CreatedByIp = request.IpAddress,
+                UserAgent = request.UserAgent
             });
 
             await _refreshTokenRepository.UnitOfWork.SaveEntitiesAsync();

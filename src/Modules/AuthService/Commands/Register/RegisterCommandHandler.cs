@@ -45,9 +45,11 @@ namespace AuthService.Commands.Register
             var refreshToken = _tokenService.GenerateRefreshToken();
             await _refreshTokenRepository.AddAsync(new RefreshToken
             {
+                UserCredential = user,
                 Token = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
-                UserCredential = user
+                CreatedByIp = request.IpAddress,
+                UserAgent = request.UserAgent,
             });
 
             await _userRepository.UnitOfWork.SaveEntitiesAsync();

@@ -20,6 +20,9 @@ namespace AuthService.Commands.Logout
                 return false;
 
             token.IsRevoked = true;
+            token.RevokedAt = DateTime.UtcNow;
+            token.RevokedByIp = request.IpAddress;
+            token.UserAgent = request.UserAgent;
 
             await _refreshTokenRepository.UnitOfWork.SaveEntitiesAsync();
             return true;

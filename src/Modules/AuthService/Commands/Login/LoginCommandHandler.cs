@@ -26,17 +26,38 @@ namespace AuthService.Commands.Login
         public async Task<AuthResultDto> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             var user = await _userRepository.FirstOrDefaultAsync(u => u.Username == request.Username);
-            if (user == null || !PasswordHasher.Verify(request.Password, user.PasswordHash))
+            if (user == null)
+                throw new NotFoundException("UserNotFound");
+
+            if (user.LockoutEnd.HasValue && user.LockoutEnd > DateTime.UtcNow)
+                throw new ValidationException("AccountLocked");
+
+            if (!user.IsEmailConfirmed)
+                throw new ValidationException("EmailNotConfirmed");
+
+            if (!PasswordHasher.Verify(request.Password, user.PasswordHash))
+            {
+                user.FailedLoginCount++;
+                if (user.FailedLoginCount >= 5)
+                    user.LockoutEnd = DateTime.UtcNow.AddMinutes(15);
+                await _userRepository.UnitOfWork.SaveEntitiesAsync();
                 throw new ValidationException("InvalidCredentials");
+            }
+
+            // Başarılı girişte sıfırla
+            user.FailedLoginCount = 0;
+            user.LockoutEnd = null;
 
             var accessToken = _tokenService.GenerateAccessToken(user);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
             var refresh = new RefreshToken
             {
+                UserCredentialId = user.Id,
                 Token = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
-                UserCredentialId = user.Id
+                CreatedByIp = request.IpAddress,
+                UserAgent = request.UserAgent,
             };
 
             await _refreshTokenRepository.AddAsync(refresh);

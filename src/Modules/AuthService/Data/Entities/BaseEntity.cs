@@ -6,6 +6,7 @@ namespace AuthService.Data.Entities
     {
         public Guid Id { get; protected set; } = Guid.NewGuid();
         public DateTime CreatedAt { get; protected set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; protected set; } = DateTime.UtcNow;
 
         private List<INotification> domainEvents;
         public IReadOnlyCollection<INotification> DomainEvents => domainEvents?.AsReadOnly();

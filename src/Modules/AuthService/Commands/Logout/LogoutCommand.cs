@@ -2,5 +2,5 @@
 
 namespace AuthService.Commands.Logout
 {
-    public record LogoutCommand(string RefreshToken) : IRequest<bool>;
+    public record LogoutCommand(string RefreshToken, string IpAddress,string UserAgent) : IRequest<bool>;
 }

@@ -13,22 +13,27 @@ namespace AuthService.Data
 
         public AuthDbContext(DbContextOptions<AuthDbContext> options, IMediator mediator)
              : base(options) => _mediator = mediator;
-      
-        public DbSet<UserCredential> UserCredentials { get; set; }
+
+        public DbSet<EmailConfirmationCode> EmailConfirmationCodes { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<UserCredential> UserCredentials { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserCredential>()
-                .HasIndex(u => u.Username)
+            modelBuilder.Entity<EmailConfirmationCode>()
+                .HasIndex(u => u.Email)
                 .IsUnique();
 
             modelBuilder.Entity<UserCredential>()
                 .HasMany(u => u.RefreshTokens)
                 .WithOne(r => r.UserCredential)
                 .HasForeignKey(r => r.UserCredentialId);
+
+            modelBuilder.Entity<UserCredential>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
         }
 
         public async Task<bool> SaveEntitiesAsync(CancellationToken cancellationToken = default)

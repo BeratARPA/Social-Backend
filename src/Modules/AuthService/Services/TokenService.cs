@@ -28,7 +28,6 @@ namespace AuthService.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-                new Claim(ClaimTypes.Role, user.Role),
                 new Claim("email", user.Email),
             };
 

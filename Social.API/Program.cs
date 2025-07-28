@@ -1,12 +1,17 @@
 using AuthService.DependencyInjection;
+using EventBus.Base;
+using EventBus.Base.Abstraction;
+using ExceptionHandling.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NotificationService.DependencyInjection;
+using NotificationService.Events;
+using NotificationService.Events.Handlers;
 using Prometheus;
 using System.Text;
 using System.Text.Json;
-using ExceptionHandling.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +42,9 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddHealthChecks();
 
+builder.Services.Configure<EventBusConfig>(builder.Configuration.GetSection("EventBus"));
 builder.Services.AddAuthService(builder.Configuration);
+builder.Services.AddNotificationService();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -62,6 +69,9 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+var eventBus = app.Services.GetRequiredService<IEventBus>();
+eventBus.Subscribe<SendNotificationEvent, SendNotificationEventHandler>();
+
 app.UseHttpMetrics();
 app.MapMetrics();
 
@@ -84,11 +94,16 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Social API V1");
         options.RoutePrefix = string.Empty; // Set Swagger UI at the app's root      
     });
+
 }
 
 app.UseGlobalExceptionMiddleware();
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 

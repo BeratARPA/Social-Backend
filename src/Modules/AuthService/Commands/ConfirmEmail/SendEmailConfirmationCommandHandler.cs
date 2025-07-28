@@ -24,17 +24,26 @@ namespace AuthService.Commands.ConfirmEmail
             if (user == null)
                 throw new NotFoundException("UserNotFound");
 
-            var code = new Random().Next(100000, 999999).ToString(); // 6 haneli
-            var emailConfirmationCode = new EmailConfirmationCode
+            var code = new Random().Next(100000, 999999).ToString();
+            var confirmationCode = new EmailConfirmationCode
             {
                 Email = request.Email,
                 Code = code,
                 ExpiresAt = DateTime.UtcNow.AddMinutes(10),
+                CreatedByIp = request.IpAddress,
+                UserAgent = request.UserAgent
             };
 
-            await _confirmationCodeRepository.AddAsync(emailConfirmationCode);
+            await _confirmationCodeRepository.AddAsync(confirmationCode);
             await _confirmationCodeRepository.UnitOfWork.SaveEntitiesAsync();
 
+            //await _eventBus.PublishAsync(new SendNotificationEvent(
+            //    NotificationType.Email,
+            //    request.Email,
+            //    "E-posta Doğrulama",
+            //    "email-confirmation",
+            //    new { Code = code }
+            //));
 
             return true;
         }

@@ -1,5 +1,7 @@
 ﻿using AuthService.Data.Entities;
 using AuthService.Data.Repositories;
+using EventBus.Base.Abstraction;
+using EventBus.IntegrationEvents.Verification;
 using ExceptionHandling.Exceptions;
 using MediatR;
 
@@ -9,13 +11,16 @@ namespace AuthService.Commands.ConfirmEmail
     {
         private readonly IGenericRepository<EmailConfirmationCode> _confirmationCodeRepository;
         private readonly IGenericRepository<UserCredential> _userRepository;
+        private readonly IEventBus _eventBus;
 
         public SendEmailConfirmationCommandHandler(
             IGenericRepository<EmailConfirmationCode> confirmationCodeRepository,
-            IGenericRepository<UserCredential> userRepository)
+            IGenericRepository<UserCredential> userRepository,
+            IEventBus eventBus)
         {
             _confirmationCodeRepository = confirmationCodeRepository;
             _userRepository = userRepository;
+            _eventBus = eventBus;
         }
 
         public async Task<bool> Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
@@ -37,13 +42,12 @@ namespace AuthService.Commands.ConfirmEmail
             await _confirmationCodeRepository.AddAsync(confirmationCode);
             await _confirmationCodeRepository.UnitOfWork.SaveEntitiesAsync();
 
-            //await _eventBus.PublishAsync(new SendNotificationEvent(
-            //    NotificationType.Email,
-            //    request.Email,
-            //    "E-posta Doğrulama",
-            //    "email-confirmation",
-            //    new { Code = code }
-            //));
+            // Integration Event gönderimi
+             _eventBus.Publish(new SendVerificationCodeIntegrationEvent(
+                VerificationChannel.Email,
+                request.Email,
+                code
+            ));
 
             return true;
         }

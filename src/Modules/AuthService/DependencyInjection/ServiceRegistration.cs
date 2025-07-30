@@ -1,9 +1,13 @@
 ﻿using AuthService.Data;
 using AuthService.Data.Repositories;
 using AuthService.Services;
+using EventBus.Base;
+using EventBus.Base.Abstraction;
+using EventBus.Factory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RabbitMQ.Client;
 using System.Reflection;
 
 namespace AuthService.DependencyInjection
@@ -53,6 +57,26 @@ namespace AuthService.DependencyInjection
             context.Database.EnsureCreated();
             context.Database.Migrate();
 
+            services.AddSingleton<IEventBus>(sp =>
+            {
+                EventBusConfig config = new()
+                {
+                    ConnectionRetryCount = 5,
+                    EventNameSuffix = "IntegrationEvent",
+                    SubscriberClientAppName = "AuthService",
+                    Connection = new ConnectionFactory()
+                    {
+                        HostName = "localhost",
+                        Port = 5672,
+                        UserName = "guest",
+                        Password = "guest"
+                    },                   
+                    EventBusType = EventBusType.RabbitMQ,
+
+                };
+                return EventBusFactory.Create(config, sp);
+            });
+          
             return services;
         }
     }

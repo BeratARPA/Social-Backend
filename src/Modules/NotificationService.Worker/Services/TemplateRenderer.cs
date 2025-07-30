@@ -1,7 +1,7 @@
 ﻿using RazorLight;
 using System.Reflection;
 
-namespace NotificationService.Services
+namespace NotificationService.Worker.Services
 {
     public class TemplateRenderer : ITemplateRenderer
     {

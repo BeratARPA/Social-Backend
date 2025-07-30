@@ -1,7 +1,6 @@
 ﻿using AuthService.Data.Entities;
 using AuthService.Data.Repositories;
 using AuthService.Dtos;
-using AuthService.Events;
 using AuthService.Services;
 using ExceptionHandling.Exceptions;
 using MediatR;
@@ -54,7 +53,7 @@ namespace AuthService.Commands.Register
 
             await _userRepository.UnitOfWork.SaveEntitiesAsync();
 
-            await _publisher.Publish(new UserCreatedEvent(user.Id, user.Email));
+            //await _publisher.Publish(new UserCreatedEvent(user.Id, user.Email));
 
             return new AuthResultDto
             {

@@ -1,4 +1,4 @@
-﻿namespace NotificationService.Services
+﻿namespace NotificationService.Worker.Services
 {
     public interface ITemplateRenderer
     {

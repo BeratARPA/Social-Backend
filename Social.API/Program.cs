@@ -1,14 +1,11 @@
 using AuthService.DependencyInjection;
-using EventBus.Base;
 using EventBus.Base.Abstraction;
+using EventBus.IntegrationEvents.Verification;
 using ExceptionHandling.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using NotificationService.DependencyInjection;
-using NotificationService.Events;
-using NotificationService.Events.Handlers;
 using Prometheus;
 using System.Text;
 using System.Text.Json;
@@ -42,9 +39,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddHealthChecks();
 
-builder.Services.Configure<EventBusConfig>(builder.Configuration.GetSection("EventBus"));
 builder.Services.AddAuthService(builder.Configuration);
-builder.Services.AddNotificationService();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -68,9 +63,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
-var eventBus = app.Services.GetRequiredService<IEventBus>();
-eventBus.Subscribe<SendNotificationEvent, SendNotificationEventHandler>();
 
 app.UseHttpMetrics();
 app.MapMetrics();

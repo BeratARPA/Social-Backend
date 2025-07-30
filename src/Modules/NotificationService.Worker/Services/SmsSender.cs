@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace NotificationService.Services
+namespace NotificationService.Worker.Services
 {
     public class SmsSender : ISmsSender
     {

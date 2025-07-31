@@ -20,11 +20,7 @@ namespace AuthService.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<EmailConfirmationCode>()
-                .HasIndex(u => u.Email)
-                .IsUnique();
+            base.OnModelCreating(modelBuilder);        
 
             modelBuilder.Entity<UserCredential>()
                 .HasMany(u => u.RefreshTokens)

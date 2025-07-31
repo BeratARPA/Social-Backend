@@ -1,5 +1,4 @@
 using EventBus.Base;
-using EventBus.Base.Abstraction;
 using EventBus.Factory;
 using NotificationService.Worker;
 using NotificationService.Worker.Events.Handlers;
@@ -8,18 +7,22 @@ using RabbitMQ.Client;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+// Handler'larý Scoped olarak kaydet
 builder.Services.AddTransient<SendVerificationCodeEventHandler>();
 
-builder.Services.AddSingleton<IEmailSender, EmailSender>();
-builder.Services.AddSingleton<ISmsSender, SmsSender>();
-builder.Services.AddSingleton<ITemplateRenderer, TemplateRenderer>();
+// Service'leri kaydet
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddScoped<ISmsSender, SmsSender>();
+builder.Services.AddScoped<ITemplateRenderer, TemplateRenderer>();
 
-builder.Services.AddSingleton<IEventBus>(sp =>
+// EventBus konfigürasyonu
+builder.Services.AddSingleton(sp =>
 {
     EventBusConfig config = new()
     {
         ConnectionRetryCount = 5,
         EventNameSuffix = "IntegrationEvent",
+        DefaultTopicName = "SocialAppEventBus",
         SubscriberClientAppName = "NotificationService",
         Connection = new ConnectionFactory()
         {
@@ -29,11 +32,12 @@ builder.Services.AddSingleton<IEventBus>(sp =>
             Password = "guest"
         },
         EventBusType = EventBusType.RabbitMQ,
-
     };
+
     return EventBusFactory.Create(config, sp);
 });
 
+// Worker service'i kaydet
 builder.Services.AddHostedService<Worker>();
 
 var host = builder.Build();

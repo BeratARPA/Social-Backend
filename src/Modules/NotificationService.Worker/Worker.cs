@@ -6,23 +6,48 @@ namespace NotificationService.Worker
 {
     public class Worker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
         private readonly IEventBus _eventBus;
+        private readonly ILogger<Worker> _logger;
 
-        public Worker(ILogger<Worker> logger, IEventBus eventBus)
+        public Worker(IEventBus eventBus, ILogger<Worker> logger)
         {
-            _logger = logger;
             _eventBus = eventBus;
+            _logger = logger;
         }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Worker baþlatýldý: {time}", DateTimeOffset.Now);
+            _logger.LogInformation("NotificationService.Worker baþlatýlýyor...");
 
-            // EventBus subscribe
+            // Event subscription - Bu satýr çok önemli
             _eventBus.Subscribe<SendVerificationCodeIntegrationEvent, SendVerificationCodeEventHandler>();
 
-            return Task.CompletedTask;
+            _logger.LogInformation("SendVerificationCodeIntegrationEvent event'ine subscribe oldu");
+
+            // Worker service sonlanana kadar çalýþmaya devam et
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                await Task.Delay(1000, stoppingToken); // 10 saniye bekle
+                _logger.LogInformation("NotificationService.Worker çalýþýyor... {time}", DateTimeOffset.Now);
+            }
+        }
+
+        public override async Task StopAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation("NotificationService.Worker durduruluyor...");
+
+            // Event subscription'larý temizle
+            try
+            {
+                _eventBus.Unsubscribe<SendVerificationCodeIntegrationEvent, SendVerificationCodeEventHandler>();
+                _logger.LogInformation("Event subscription'larý temizlendi");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Event subscription temizlenirken hata oluþtu");
+            }
+
+            await base.StopAsync(stoppingToken);
         }
     }
 }

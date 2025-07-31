@@ -2,7 +2,6 @@
 using AuthService.Data.Repositories;
 using AuthService.Services;
 using EventBus.Base;
-using EventBus.Base.Abstraction;
 using EventBus.Factory;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,7 +14,7 @@ namespace AuthService.DependencyInjection
     public static class ServiceRegistration
     {
         public static IServiceCollection AddAuthService(this IServiceCollection services, IConfiguration baseConfiguration)
-        {  
+        {
             // 1. auth.settings.json yolunu belirle
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
             var authSettingsPath = Path.Combine(AppContext.BaseDirectory, $"auth.settings.{environment}.json");
@@ -57,12 +56,13 @@ namespace AuthService.DependencyInjection
             context.Database.EnsureCreated();
             context.Database.Migrate();
 
-            services.AddSingleton<IEventBus>(sp =>
+            services.AddSingleton(sp =>
             {
                 EventBusConfig config = new()
                 {
                     ConnectionRetryCount = 5,
                     EventNameSuffix = "IntegrationEvent",
+                    DefaultTopicName = "SocialAppEventBus",
                     SubscriberClientAppName = "AuthService",
                     Connection = new ConnectionFactory()
                     {
@@ -70,13 +70,13 @@ namespace AuthService.DependencyInjection
                         Port = 5672,
                         UserName = "guest",
                         Password = "guest"
-                    },                   
+                    },
                     EventBusType = EventBusType.RabbitMQ,
-
                 };
+
                 return EventBusFactory.Create(config, sp);
             });
-          
+
             return services;
         }
     }

@@ -9,34 +9,58 @@ namespace NotificationService.Worker.Events.Handlers
         private readonly IEmailSender _emailSender;
         private readonly ISmsSender _smsSender;
         private readonly ITemplateRenderer _templateRenderer;
+        private readonly ILogger<SendVerificationCodeEventHandler> _logger;
 
         public SendVerificationCodeEventHandler(
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ITemplateRenderer templateRenderer)
+            ITemplateRenderer templateRenderer,
+            ILogger<SendVerificationCodeEventHandler> logger)
         {
             _emailSender = emailSender;
             _smsSender = smsSender;
             _templateRenderer = templateRenderer;
+            _logger = logger;
         }
 
         public async Task Handle(SendVerificationCodeIntegrationEvent @event)
         {
-            var templateModel = new { Code = @event.Code };
-            var body = await _templateRenderer.RenderAsync("VerificationCode", templateModel);
+            _logger.LogInformation("=== [Handler] Event alındı! ===");
+            _logger.LogInformation("[Handler] Recipient: {@Recipient}", @event.Recipient);
+            _logger.LogInformation("[Handler] Channel: {@Channel}", @event.Channel);
+            _logger.LogInformation("[Handler] Code: {@Code}", @event.Code);
 
-            switch (@event.Channel)
+            try
             {
-                case VerificationChannel.Email:
-                    await _emailSender.SendAsync(@event.Recipient, "Doğrulama Kodu", body);
-                    break;
+                Console.WriteLine($"[Handler] Event alındı: {@event.Recipient}, Kanal: {@event.Channel}");
 
-                case VerificationChannel.Sms:
-                    await _smsSender.SendAsync(@event.Recipient, @event.Code); // SMS için sade içerik
-                    break;
+                var templateModel = new { Code = @event.Code };
+                var body = await _templateRenderer.RenderAsync("VerificationCode", templateModel);
 
-                default:
-                    throw new InvalidOperationException("Desteklenmeyen kanal tipi");
+                switch (@event.Channel)
+                {
+                    case VerificationChannel.Email:
+                        _logger.LogInformation("[Handler] Email gönderiliyor: {Recipient}", @event.Recipient);
+                        Console.WriteLine($"[Handler] Email gönderiliyor: {@event.Recipient}");
+                        await _emailSender.SendAsync(@event.Recipient, "Doğrulama Kodu", body);
+                        _logger.LogInformation("[Handler] Email başarıyla gönderildi!");
+                        Console.WriteLine($"[Handler] Email başarıyla gönderildi");
+                        break;
+
+                    case VerificationChannel.Sms:
+                        await _smsSender.SendAsync(@event.Recipient, @event.Code);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException("Desteklenmeyen kanal tipi");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "[Handler] HATA oluştu");
+                Console.WriteLine($"[Handler] HATA: {ex.Message}");
+                Console.WriteLine($"[Handler] Stack: {ex.StackTrace}");
+                throw; // Re-throw to let EventBus handle
             }
         }
     }

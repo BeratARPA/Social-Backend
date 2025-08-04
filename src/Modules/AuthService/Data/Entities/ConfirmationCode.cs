@@ -1,8 +1,9 @@
 ﻿namespace AuthService.Data.Entities
 {
-    public class EmailConfirmationCode : BaseEntity
+    public class ConfirmationCode : BaseEntity
     {
-        public string Email { get; set; } = null!;
+        public ConfirmationType Type { get; set; }
+        public string Target { get; set; } = null!; // email adresi, telefon numarası vs.
         public string Code { get; set; } = null!;
         public DateTime ExpiresAt { get; set; }
         public bool IsUsed { get; set; }
@@ -10,6 +11,7 @@
         public DateTime? UsedAt { get; set; }
         public string CreatedByIp { get; set; } = null!;
         public string? UserAgent { get; set; }
+
 
         public bool IsExpired => DateTime.UtcNow > ExpiresAt;
         public bool IsValid => !IsUsed && !IsExpired;

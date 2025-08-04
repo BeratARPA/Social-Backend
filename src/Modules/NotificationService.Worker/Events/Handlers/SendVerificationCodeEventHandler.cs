@@ -25,26 +25,15 @@ namespace NotificationService.Worker.Events.Handlers
 
         public async Task Handle(SendVerificationCodeIntegrationEvent @event)
         {
-            _logger.LogInformation("=== [Handler] Event alındı! ===");
-            _logger.LogInformation("[Handler] Recipient: {@Recipient}", @event.Recipient);
-            _logger.LogInformation("[Handler] Channel: {@Channel}", @event.Channel);
-            _logger.LogInformation("[Handler] Code: {@Code}", @event.Code);
-
             try
-            {
-                Console.WriteLine($"[Handler] Event alındı: {@event.Recipient}, Kanal: {@event.Channel}");
-
+            {           
                 var templateModel = new { Code = @event.Code };
                 var body = await _templateRenderer.RenderAsync("VerificationCode", templateModel);
 
                 switch (@event.Channel)
                 {
-                    case VerificationChannel.Email:
-                        _logger.LogInformation("[Handler] Email gönderiliyor: {Recipient}", @event.Recipient);
-                        Console.WriteLine($"[Handler] Email gönderiliyor: {@event.Recipient}");
+                    case VerificationChannel.Email:                
                         await _emailSender.SendAsync(@event.Recipient, "Doğrulama Kodu", body);
-                        _logger.LogInformation("[Handler] Email başarıyla gönderildi!");
-                        Console.WriteLine($"[Handler] Email başarıyla gönderildi");
                         break;
 
                     case VerificationChannel.Sms:
@@ -57,10 +46,8 @@ namespace NotificationService.Worker.Events.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "[Handler] HATA oluştu");
-                Console.WriteLine($"[Handler] HATA: {ex.Message}");
-                Console.WriteLine($"[Handler] Stack: {ex.StackTrace}");
-                throw; // Re-throw to let EventBus handle
+                _logger.LogError(ex, "Hata oluştu: {Message}", ex.Message);
+                throw;
             }
         }
     }

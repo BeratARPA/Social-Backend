@@ -88,8 +88,11 @@ namespace AuthService.Data.Repositories
 
         public async Task UpdateAsync(T entity)
         {
-            await _context.Set<T>().Where(e => e.Id == entity.Id).ExecuteUpdateAsync(
-                  u => u.SetProperty(e => e, entity));
+            var dbEntity = await _context.Set<T>().FindAsync(entity.Id);
+            if (dbEntity == null)
+                throw new KeyNotFoundException($"Entity with Id {entity.Id} not found.");
+
+            _context.Entry(dbEntity).CurrentValues.SetValues(entity);
         }
     }
 }

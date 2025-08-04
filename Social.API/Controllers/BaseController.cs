@@ -15,5 +15,14 @@ namespace Social.API.Controllers
         protected string GetIp() => HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
         protected string GetUserAgent() => Request.Headers["User-Agent"].ToString() ?? "unknown";
 
+        protected Guid GetUserId()
+        {
+            var userIdClaim = User.FindFirst("id");
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                throw new UnauthorizedAccessException("User ID not found in claims.");
+            }
+            return userId;
+        }
     }
 }

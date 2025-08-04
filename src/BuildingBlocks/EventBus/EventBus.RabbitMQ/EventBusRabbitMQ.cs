@@ -73,7 +73,7 @@ namespace EventBus.RabbitMQ
                 .Or<SocketException>()
                 .WaitAndRetry(EventBusConfig.ConnectionRetryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                 {
-                    // log
+                   
                 });
 
             var eventName = @event.GetType().Name;
@@ -89,8 +89,8 @@ namespace EventBus.RabbitMQ
             policy.Execute(() =>
             {
                 var properties = new BasicProperties();
-                properties.DeliveryMode = DeliveryModes.Persistent; // persistent             
-
+                properties.DeliveryMode = DeliveryModes.Persistent; // persistent
+              
                 consumerChannel.BasicPublishAsync(
                     exchange: EventBusConfig.DefaultTopicName,
                     routingKey: eventName,
@@ -106,7 +106,7 @@ namespace EventBus.RabbitMQ
             eventName = ProcessEventName(eventName);
 
             if (!SubscriptionManager.HasSubscriptionsForEvent(eventName))
-            {
+            {                
                 if (!persistentConnection.IsConnected)
                 {
                     persistentConnection.TryConnect();
@@ -121,7 +121,7 @@ namespace EventBus.RabbitMQ
                 consumerChannel.QueueBindAsync(queue: GetSubName(eventName),
                                   exchange: EventBusConfig.DefaultTopicName,
                                   routingKey: eventName);
-            }
+            }           
 
             SubscriptionManager.AddSubscription<T, TH>();
             StartBasicConsume(eventName);
@@ -175,7 +175,7 @@ namespace EventBus.RabbitMQ
             }
             catch (Exception ex)
             {
-                // logging
+              
             }
 
             await consumerChannel.BasicAckAsync(eventArgs.DeliveryTag, multiple: false);

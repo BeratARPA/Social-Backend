@@ -1,16 +1,17 @@
-﻿using Microsoft.Extensions.Configuration;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
 
 namespace NotificationService.Worker.Services
 {
     public class EmailSender : IEmailSender
     {
+        private readonly ILogger<EmailSender> _logger;
         private readonly IConfiguration _configuration;
 
-        public EmailSender(IConfiguration configuration)
+        public EmailSender(IConfiguration configuration, ILogger<EmailSender> logger)
         {
             _configuration = configuration;
+            _logger = logger;
         }
 
         public async Task SendAsync(string to, string subject, string body)
@@ -22,6 +23,13 @@ namespace NotificationService.Worker.Services
             var password = smtpSettings["Password"];
             var from = smtpSettings["From"];
 
+            using var client = new SmtpClient(host, port)
+            {                
+                Credentials = new NetworkCredential(username, password),
+                EnableSsl = true,
+                UseDefaultCredentials = false
+            };
+
             var message = new MailMessage
             {
                 From = new MailAddress(from),
@@ -32,13 +40,15 @@ namespace NotificationService.Worker.Services
 
             message.To.Add(to);
 
-            using var client = new SmtpClient(host, port)
+            try
             {
-                Credentials = new NetworkCredential(username, password),
-                EnableSsl = true
-            };
-
-            await client.SendMailAsync(message);
+                await client.SendMailAsync(message);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Hata oluştu: {Message}", ex.Message);
+                throw;
+            }
         }
     }
 }

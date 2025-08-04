@@ -1,0 +1,10 @@
+{
+  "Jwt": {
+    "Issuer": "https://api.iscsocial.com",
+    "Audience": "https://api.iscsocial.com",
+    "Key": "Xz48!d3Vp7jK2qNp@RmPL9vA#5nB@tG0"
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=BERAT-DESKTOP;Database=UserDB;User Id=sa;Password=isc12345;TrustServerCertificate=True;"
+  }
+}

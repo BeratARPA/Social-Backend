@@ -22,6 +22,7 @@
     <ProjectReference Include="..\src\BuildingBlocks\EventBus\EventBus.Base\EventBus.Base.csproj" />
     <ProjectReference Include="..\src\BuildingBlocks\ExceptionHandling\ExceptionHandling.csproj" />
     <ProjectReference Include="..\src\Modules\AuthService\AuthService.csproj" />
+    <ProjectReference Include="..\src\Modules\UserService\UserService.csproj" />
   </ItemGroup>
 
 </Project>

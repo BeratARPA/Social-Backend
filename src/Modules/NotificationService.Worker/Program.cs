@@ -8,7 +8,7 @@ using RabbitMQ.Client;
 var builder = Host.CreateApplicationBuilder(args);
 
 // Handler'larý Scoped olarak kaydet
-builder.Services.AddTransient<SendVerificationCodeEventHandler>();
+builder.Services.AddScoped<SendVerificationCodeEventHandler>();
 
 // Service'leri kaydet
 builder.Services.AddScoped<IEmailSender, EmailSender>();
@@ -21,7 +21,6 @@ builder.Services.AddSingleton(sp =>
     EventBusConfig config = new()
     {
         ConnectionRetryCount = 5,
-        EventNameSuffix = "IntegrationEvent",
         DefaultTopicName = "SocialAppEventBus",
         SubscriberClientAppName = "NotificationService",
         Connection = new ConnectionFactory()

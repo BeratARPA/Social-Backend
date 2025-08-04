@@ -7,7 +7,7 @@ using System.Net.Sockets;
 namespace EventBus.RabbitMQ
 {
     public class RabbitMQPersistentConnection : IDisposable
-    {
+    {     
         private readonly IConnectionFactory connectionFactory;
         private readonly int retryCount;
         private IConnection connection;
@@ -41,7 +41,7 @@ namespace EventBus.RabbitMQ
                      .Or<BrokerUnreachableException>()
                      .WaitAndRetry(retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
                      {
-
+                        
                      });
 
                 policy.Execute(() =>
@@ -54,9 +54,7 @@ namespace EventBus.RabbitMQ
                     connection.ConnectionShutdownAsync += Connection_ConnectionShutdownAsync;
                     connection.CallbackExceptionAsync += Connection_CallbackExceptionAsync;
                     connection.ConnectionBlockedAsync += Connection_ConnectionBlockedAsync;
-
-                    // log
-
+                    
                     return true;
                 }
 
@@ -66,24 +64,18 @@ namespace EventBus.RabbitMQ
 
         private async Task Connection_ConnectionBlockedAsync(object sender, ConnectionBlockedEventArgs @event)
         {
-            // log
-
             if (_disposed) return;
             TryConnect();
         }
 
         private async Task Connection_CallbackExceptionAsync(object sender, CallbackExceptionEventArgs @event)
-        {
-            // log
-
+        {         
             if (_disposed) return;
             TryConnect();
         }
 
         private async Task Connection_ConnectionShutdownAsync(object sender, ShutdownEventArgs @event)
         {
-            // log
-
             if (_disposed) return;
             TryConnect();
         }

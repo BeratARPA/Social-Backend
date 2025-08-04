@@ -1,4 +1,6 @@
 using AuthService.DependencyInjection;
+using EventBus.Base.Abstraction;
+using EventBus.IntegrationEvents.Registered;
 using ExceptionHandling.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -7,6 +9,8 @@ using Microsoft.OpenApi.Models;
 using Prometheus;
 using System.Text;
 using System.Text.Json;
+using UserService.DependencyInjection;
+using UserService.IntegrationEvents.IntegrationEventHandlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +42,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddHealthChecks();
 
 builder.Services.AddAuthService(builder.Configuration);
+builder.Services.AddUserService(builder.Configuration);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -98,5 +103,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+var eventBus = app.Services.GetRequiredService<IEventBus>();
+eventBus.Subscribe<UserRegisteredIntegrationEvent, UserRegisteredIntegrationEventHandler>();
 
 app.Run();

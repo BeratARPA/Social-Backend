@@ -2,6 +2,8 @@
 using AuthService.Data.Repositories;
 using AuthService.Dtos;
 using AuthService.Services;
+using EventBus.Base.Abstraction;
+using EventBus.IntegrationEvents.Registered;
 using ExceptionHandling.Exceptions;
 using MediatR;
 
@@ -12,18 +14,18 @@ namespace AuthService.Commands.Register
         private readonly IGenericRepository<UserCredential> _userRepository;
         private readonly IGenericRepository<RefreshToken> _refreshTokenRepository;
         private readonly ITokenService _tokenService;
-        private readonly IPublisher _publisher;
+        private readonly IEventBus _eventBus;
 
         public RegisterCommandHandler(
             IGenericRepository<UserCredential> userRepository,
             IGenericRepository<RefreshToken> refreshTokenRepository,
             ITokenService tokenService,
-            IPublisher publisher)
+            IEventBus eventBus)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
             _tokenService = tokenService;
-            _publisher = publisher;
+            _eventBus = eventBus;
         }
 
         public async Task<AuthResultDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -52,8 +54,6 @@ namespace AuthService.Commands.Register
             });
 
             await _userRepository.UnitOfWork.SaveEntitiesAsync();
-
-            //await _publisher.Publish(new UserCreatedEvent(user.Id, user.Email));
 
             return new AuthResultDto
             {

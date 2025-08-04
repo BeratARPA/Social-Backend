@@ -61,7 +61,6 @@ namespace AuthService.DependencyInjection
                 EventBusConfig config = new()
                 {
                     ConnectionRetryCount = 5,
-                    EventNameSuffix = "IntegrationEvent",
                     DefaultTopicName = "SocialAppEventBus",
                     SubscriberClientAppName = "AuthService",
                     Connection = new ConnectionFactory()

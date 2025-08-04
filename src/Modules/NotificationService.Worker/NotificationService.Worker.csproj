@@ -1,24 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-NotificationService.Worker-fa0b4006-0aa4-48e9-ad3f-67fa3ed93025</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>dotnet-NotificationService.Worker-fa0b4006-0aa4-48e9-ad3f-67fa3ed93025</UserSecretsId>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+	</PropertyGroup>
 
 	<ItemGroup>
-		<EmbeddedResource Include="Templates\**\*.cshtml" />
+		<EmbeddedResource Include="Templates\*.cshtml" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
-    <PackageReference Include="RazorLight" Version="2.3.1" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7" />
+		<PackageReference Include="RazorLight" Version="2.3.1" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.Base\EventBus.Base.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.Factory\EventBus.Factory.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.IntegrationEvents\EventBus.IntegrationEvents.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.Base\EventBus.Base.csproj" />
+		<ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.Factory\EventBus.Factory.csproj" />
+		<ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.IntegrationEvents\EventBus.IntegrationEvents.csproj" />
+	</ItemGroup>
+
 </Project>

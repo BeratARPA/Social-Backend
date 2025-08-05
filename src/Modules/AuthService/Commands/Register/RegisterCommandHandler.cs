@@ -3,7 +3,6 @@ using AuthService.Data.Repositories;
 using AuthService.Dtos;
 using AuthService.Services;
 using EventBus.Base.Abstraction;
-using EventBus.IntegrationEvents.Registered;
 using ExceptionHandling.Exceptions;
 using MediatR;
 

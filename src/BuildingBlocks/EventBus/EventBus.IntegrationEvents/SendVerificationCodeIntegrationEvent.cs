@@ -1,6 +1,6 @@
 ﻿using EventBus.Base.Events;
 
-namespace EventBus.IntegrationEvents.Verification
+namespace EventBus.IntegrationEvents
 {
     public class SendVerificationCodeIntegrationEvent : IntegrationEvent
     {

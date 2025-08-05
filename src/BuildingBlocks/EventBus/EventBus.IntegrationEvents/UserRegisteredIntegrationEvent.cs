@@ -1,6 +1,6 @@
 ﻿using EventBus.Base.Events;
 
-namespace EventBus.IntegrationEvents.Registered
+namespace EventBus.IntegrationEvents
 {
     public class UserRegisteredIntegrationEvent : IntegrationEvent
     {

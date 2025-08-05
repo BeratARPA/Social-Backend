@@ -1,5 +1,5 @@
 ﻿using EventBus.Base.Abstraction;
-using EventBus.IntegrationEvents.Registered;
+using EventBus.IntegrationEvents;
 using UserService.Data.Entities;
 using UserService.Data.Repositories;
 

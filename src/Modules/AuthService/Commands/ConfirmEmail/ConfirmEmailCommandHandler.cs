@@ -1,7 +1,7 @@
 ﻿using AuthService.Data.Entities;
 using AuthService.Data.Repositories;
 using EventBus.Base.Abstraction;
-using EventBus.IntegrationEvents.Registered;
+using EventBus.IntegrationEvents;
 using ExceptionHandling.Exceptions;
 using MediatR;
 

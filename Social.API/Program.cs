@@ -1,6 +1,6 @@
 using AuthService.DependencyInjection;
 using EventBus.Base.Abstraction;
-using EventBus.IntegrationEvents.Registered;
+using EventBus.IntegrationEvents;
 using ExceptionHandling.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;

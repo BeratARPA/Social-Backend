@@ -1,5 +1,5 @@
 ﻿using EventBus.Base.Abstraction;
-using EventBus.IntegrationEvents.Verification;
+using EventBus.IntegrationEvents;
 using NotificationService.Worker.Services;
 
 namespace NotificationService.Worker.Events.Handlers

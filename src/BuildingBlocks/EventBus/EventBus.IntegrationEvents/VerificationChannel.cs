@@ -1,4 +1,4 @@
-﻿namespace EventBus.IntegrationEvents.Verification
+﻿namespace EventBus.IntegrationEvents
 {
     public enum VerificationChannel
     {

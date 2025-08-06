@@ -94,5 +94,60 @@ namespace AuthService.Data.Repositories
 
             _context.Entry(dbEntity).CurrentValues.SetValues(entity);
         }
+
+        public async Task<T?> GetByIdIncludeDeletedAsync(Guid id)
+        {
+            return await _context.Set<T>()
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(e => e.Id == id);
+        }
+
+        public async Task<IEnumerable<T>> GetIncludeDeletedAsync(
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
+        {
+            IQueryable<T> query = _context.Set<T>().IgnoreQueryFilters();
+
+            if (filter != null)
+                query = query.Where(filter);
+
+            if (orderBy != null)
+                query = orderBy(query);
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<T>> GetDeletedOnlyAsync(
+            Expression<Func<T, bool>>? filter = null)
+        {
+            IQueryable<T> query = _context.Set<T>()
+                .IgnoreQueryFilters()
+                .Where(e => e.IsDeleted);
+
+            if (filter != null)
+                query = query.Where(filter);
+
+            return await query.ToListAsync();
+        }
+
+        public async Task SoftDeleteAsync(Guid id)
+        {
+            var entity = await GetByIdAsync(id);
+            if (entity != null)
+            {
+                entity.SoftDelete();
+                await UpdateAsync(entity);
+            }
+        }
+
+        public async Task RestoreAsync(Guid id)
+        {
+            var entity = await GetByIdIncludeDeletedAsync(id);
+            if (entity != null && entity.IsDeleted)
+            {
+                entity.Restore();
+                await UpdateAsync(entity);
+            }
+        }
     }
 }

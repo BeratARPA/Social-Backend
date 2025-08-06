@@ -1,17 +1,36 @@
-﻿using MediatR;
+﻿using ExceptionHandling.Exceptions;
+using MediatR;
+using UserService.Data.Entities;
+using UserService.Data.Repositories;
 
 namespace UserService.Commands.UpdateProfile
 {
     public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand, bool>
     {
-        public UpdateProfileCommandHandler()
-        {
+        private readonly IGenericRepository<UserProfile> _userProfileRepository;
 
+        public UpdateProfileCommandHandler(IGenericRepository<UserProfile> userProfileRepository)
+        {
+            _userProfileRepository = userProfileRepository;
         }
 
-        public Task<bool> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var userProfile = await _userProfileRepository.GetByIdAsync(request.UserId);
+            if (userProfile == null)
+                throw new NotFoundException("UserNotFound");
+
+            userProfile.Username = request.dto.Username;
+            userProfile.FullName = request.dto.FullName;
+            userProfile.Bio = request.dto.Bio;
+            userProfile.Website = request.dto.Website;
+            userProfile.Location = request.dto.Location;
+            userProfile.IsPrivate = request.dto.IsPrivate;
+
+            await _userProfileRepository.UpdateAsync(userProfile);
+            await _userProfileRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+
+            return true;
         }
     }
 }

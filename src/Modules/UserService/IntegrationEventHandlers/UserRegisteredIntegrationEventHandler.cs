@@ -3,7 +3,7 @@ using EventBus.IntegrationEvents;
 using UserService.Data.Entities;
 using UserService.Data.Repositories;
 
-namespace UserService.IntegrationEvents.IntegrationEventHandlers
+namespace UserService.IntegrationEventHandlers
 {
     public class UserRegisteredIntegrationEventHandler : IIntegrationEventHandler<UserRegisteredIntegrationEvent>
     {

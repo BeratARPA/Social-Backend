@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace UserService.Commands.Follow
+namespace UserService.Commands.Following
 {
     public record DeclineFollowRequestCommand(Guid CurrentUserId, Guid RequestUserId) : IRequest<bool>;
 }

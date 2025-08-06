@@ -1,8 +1,11 @@
 ﻿using AuthService.Data;
 using AuthService.Data.Repositories;
+using AuthService.IntegrationEventHandlers;
 using AuthService.Services;
 using EventBus.Base;
+using EventBus.Base.Abstraction;
 using EventBus.Factory;
+using EventBus.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,7 +50,8 @@ namespace AuthService.DependencyInjection
             });
 
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            services.AddScoped<ITokenService, TokenService>();
+            services.AddScoped<ITokenService, TokenService>();     
+            services.AddScoped<UserAccountSoftDeletedIntegrationEventHandler>();
 
             var optionsBuilder = new DbContextOptionsBuilder<AuthDbContext>()
                 .UseSqlServer(connectionString);
@@ -77,6 +81,12 @@ namespace AuthService.DependencyInjection
             });
 
             return services;
+        }
+
+        public static void ConfigureAuthServiceEventSubscriptions(this IServiceProvider serviceProvider)
+        {
+            var eventBus = serviceProvider.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<UserAccountSoftDeletedIntegrationEvent, UserAccountSoftDeletedIntegrationEventHandler>();
         }
     }
 }

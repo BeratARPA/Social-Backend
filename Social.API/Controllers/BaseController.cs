@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Social.API.Controllers
 {
@@ -17,7 +19,9 @@ namespace Social.API.Controllers
 
         protected Guid GetUserId()
         {
-            var userIdClaim = User.FindFirst("id");
+            var userIdClaim = User.FindFirst(JwtRegisteredClaimNames.Sub)
+                              ?? User.FindFirst(ClaimTypes.NameIdentifier);
+
             if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out var userId))
             {
                 throw new UnauthorizedAccessException("User ID not found in claims.");

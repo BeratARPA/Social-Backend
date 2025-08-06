@@ -6,6 +6,7 @@ namespace UserService.Data.Repositories
     public interface IGenericRepository<T> : IRepository<T> where T : BaseEntity
     {
         Task<T?> GetByIdAsync(Guid id);
+
         Task<IEnumerable<T>> GetAllAsync();
 
         Task<IEnumerable<T>> GetAsync(
@@ -20,6 +21,7 @@ namespace UserService.Data.Repositories
             string? includes = null);
 
         Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate);
+        Task<int> CountAsync(Expression<Func<T, bool>>? filter = null);
 
         Task AddAsync(T entity);
 
@@ -27,6 +29,16 @@ namespace UserService.Data.Repositories
 
         Task DeleteAsync(Guid id);
 
-        Task<int> CountAsync(Expression<Func<T, bool>>? filter = null);
+        Task<T?> GetByIdIncludeDeletedAsync(Guid id);
+
+        Task<IEnumerable<T>> GetIncludeDeletedAsync(
+            Expression<Func<T, bool>>? filter = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
+
+        Task<IEnumerable<T>> GetDeletedOnlyAsync(Expression<Func<T, bool>>? filter = null);
+
+        Task SoftDeleteAsync(Guid id);
+
+        Task RestoreAsync(Guid id);
     }
 }

@@ -1,5 +1,7 @@
 ﻿using EventBus.Base;
+using EventBus.Base.Abstraction;
 using EventBus.Factory;
+using EventBus.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,7 +9,7 @@ using RabbitMQ.Client;
 using System.Reflection;
 using UserService.Data;
 using UserService.Data.Repositories;
-using UserService.IntegrationEvents.IntegrationEventHandlers;
+using UserService.IntegrationEventHandlers;
 
 namespace UserService.DependencyInjection
 {
@@ -77,6 +79,12 @@ namespace UserService.DependencyInjection
             });
 
             return services;
+        }
+
+        public static void ConfigureUserServiceEventSubscriptions(this IServiceProvider serviceProvider)
+        {
+            var eventBus = serviceProvider.GetRequiredService<IEventBus>();         
+            eventBus.Subscribe<UserRegisteredIntegrationEvent, UserRegisteredIntegrationEventHandler>();
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using UserService.Commands.DeleteAccount;
-using UserService.Commands.Follow;
+using UserService.Commands.Following;
+using UserService.Commands.RestoreAccount;
 using UserService.Commands.UpdateProfile;
 using UserService.Dtos;
-using UserService.Queries.Follow;
+using UserService.Queries.Following;
 using UserService.Queries.GetSuggestions;
 using UserService.Queries.GetUser;
 using UserService.Queries.SearchUsers;
@@ -27,9 +28,9 @@ namespace Social.API.Controllers
         /// Başka kullanıcının profilini getir
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(string id)
+        public async Task<IActionResult> GetUserById(Guid id)
         {
-            var query = new GetUserByIdQuery(GetUserId());
+            var query = new GetUserByIdQuery(id);
             var result = await Mediator.Send(query);
             return Ok(result);
         }
@@ -40,7 +41,7 @@ namespace Social.API.Controllers
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequestDto request)
         {
-            var command = new UpdateProfileCommand(GetUserId());
+            var command = new UpdateProfileCommand(GetUserId(), request);
             var result = await Mediator.Send(command);
             return Ok(result);
         }
@@ -49,9 +50,10 @@ namespace Social.API.Controllers
         /// Profil fotoğrafı yükle
         /// </summary>
         [HttpPost("upload-avatar")]
-        public async Task<IActionResult> UploadAvatar()
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadAvatar([FromForm] UpdateAvatarRequestDto request)
         {
-            var command = new UploadAvatarCommand(GetUserId());
+            var command = new UploadAvatarCommand(GetUserId(), request.File);
             var result = await Mediator.Send(command);
             return Ok(result);
         }
@@ -59,7 +61,7 @@ namespace Social.API.Controllers
         /// <summary>
         /// Hesabı sil
         /// </summary>
-        [HttpDelete("account")]
+        [HttpDelete("delete-account")]
         public async Task<IActionResult> DeleteAccount()
         {
             var command = new DeleteAccountCommand(GetUserId());
@@ -68,26 +70,37 @@ namespace Social.API.Controllers
         }
 
         /// <summary>
-        /// Kullanıcı ara
+        /// Silinmiş hesabı geri yükle (30 gün içinde)
         /// </summary>
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchUsers([FromQuery] string q)
+        [HttpPost("restore-account")]
+        public async Task<IActionResult> RestoreAccount()
         {
-            var query = new SearchUsersQuery(q);
-            var result = await Mediator.Send(query);
+            var command = new RestoreAccountCommand(GetUserId());
+            var result = await Mediator.Send(command);
             return Ok(result);
         }
 
-        /// <summary>
-        /// Takip önerileri
-        /// </summary>
-        [HttpGet("suggestions")]
-        public async Task<IActionResult> GetSuggestions()
-        {
-            var query = new GetSuggestionsQuery(GetUserId());
-            var result = await Mediator.Send(query);
-            return Ok(result);
-        }
+        ///// <summary>
+        ///// Kullanıcı ara
+        ///// </summary>
+        //[HttpGet("search")]
+        //public async Task<IActionResult> SearchUsers([FromQuery] string q)
+        //{
+        //    var query = new SearchUsersQuery(q);
+        //    var result = await Mediator.Send(query);
+        //    return Ok(result);
+        //}
+
+        ///// <summary>
+        ///// Takip önerileri
+        ///// </summary>
+        //[HttpGet("suggestions")]
+        //public async Task<IActionResult> GetSuggestions()
+        //{
+        //    var query = new GetSuggestionsQuery(GetUserId());
+        //    var result = await Mediator.Send(query);
+        //    return Ok(result);
+        //}
 
         /// <summary>
         /// Kullanıcıyı takip et
@@ -163,6 +176,17 @@ namespace Social.API.Controllers
         {
             var command = new DeclineFollowRequestCommand(GetUserId(), id);
             var result = await Mediator.Send(command);
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// İki kullanıcı arasındaki takip durumunu getir
+        /// </summary>
+        [HttpGet("{targetUserId}/follow-status")]
+        public async Task<IActionResult> GetFollowStatus(Guid targetUserId)
+        {
+            var query = new GetFollowStatusQuery(GetUserId(), targetUserId);
+            var result = await Mediator.Send(query);
             return Ok(result);
         }
     }

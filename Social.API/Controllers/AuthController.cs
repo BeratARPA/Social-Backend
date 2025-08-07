@@ -47,7 +47,7 @@ namespace Social.API.Controllers
         } 
 
         [AllowAnonymous]
-        [HttpPost("send-email-confirmation")]
+        [HttpPost("send-email-verification")]
         public async Task<IActionResult> SendEmailConfirmation([FromBody] SendEmailConfirmationRequestDto request)
         {
             var command = new SendEmailConfirmationCommand(request.Email, GetIp(), GetUserAgent());
@@ -56,7 +56,7 @@ namespace Social.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("confirm-email")]
+        [HttpPost("verify-email")]
         public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequestDto request)
         {
             var command = new ConfirmEmailCommand(request.Email, request.Code, GetIp(), GetUserAgent());
@@ -71,6 +71,7 @@ namespace Social.API.Controllers
             var result = await Mediator.Send(command);
             return Ok(result);
         }     
+
         [HttpPost("verify-phone")]
         public async Task<IActionResult> VerifyPhone([FromBody] ConfirmPhoneRequestDto request)
         {

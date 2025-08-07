@@ -86,16 +86,15 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 });
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Social API V1");
         options.RoutePrefix = string.Empty; // Set Swagger UI at the app's root      
     });
-
-}
+//}
 
 app.UseGlobalExceptionMiddleware();
 

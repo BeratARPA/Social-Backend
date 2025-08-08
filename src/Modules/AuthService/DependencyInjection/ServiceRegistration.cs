@@ -35,6 +35,8 @@ namespace AuthService.DependencyInjection
                 .AddConfiguration(authConfiguration)
                 .Build();
 
+            services.AddSingleton<IConfiguration>(mergedConfiguration);
+
             // 4. mergedConfiguration'dan config oku
             var connectionString = mergedConfiguration.GetConnectionString("DefaultConnection");
 

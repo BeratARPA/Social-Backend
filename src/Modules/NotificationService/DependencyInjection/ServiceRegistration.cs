@@ -29,7 +29,7 @@ namespace NotificationService.DependencyInjection
                 .AddConfiguration(notificationConfiguration)
                 .Build();
 
-            services.AddSingleton<IConfiguration>(notificationConfiguration);
+            services.AddSingleton<IConfiguration>(mergedConfiguration);
 
             // Handler'ları Scoped olarak kaydet
             services.AddScoped<SendVerificationCodeEventHandler>();

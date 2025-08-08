@@ -34,6 +34,8 @@ namespace UserService.DependencyInjection
                 .AddConfiguration(userConfiguration)
                 .Build();
 
+            services.AddSingleton<IConfiguration>(mergedConfiguration);
+
             // 4. mergedConfiguration'dan config oku
             var connectionString = mergedConfiguration.GetConnectionString("DefaultConnection");
            

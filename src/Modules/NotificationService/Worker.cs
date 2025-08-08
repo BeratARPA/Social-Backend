@@ -1,8 +1,8 @@
 using EventBus.Base.Abstraction;
 using EventBus.IntegrationEvents;
-using NotificationService.Worker.Events.Handlers;
+using NotificationService.Events.Handlers;
 
-namespace NotificationService.Worker
+namespace NotificationService
 {
     public class Worker : BackgroundService
     {
@@ -19,14 +19,10 @@ namespace NotificationService.Worker
         {
             _logger.LogInformation("NotificationService.Worker baþlatýlýyor...");
 
-            // Event subscription
-            _eventBus.Subscribe<SendVerificationCodeIntegrationEvent, SendVerificationCodeEventHandler>();
-
             // Worker service sonlanana kadar çalýþmaya devam et
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(1000, stoppingToken);
-                _logger.LogInformation(DateTime.UtcNow.ToString());
             }
         }
 

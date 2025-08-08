@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
 
-namespace NotificationService.Worker.Services
+namespace NotificationService.Services
 {
     public class EmailSender : IEmailSender
     {

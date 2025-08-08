@@ -17,21 +17,21 @@ namespace UserService.DependencyInjection
     {
         public static IServiceCollection AddUserService(this IServiceCollection services, IConfiguration baseConfiguration)
         {
-            // 1. auth.settings.json yolunu belirle
+            // 1. user.settings.json yolunu belirle
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
             var userSettingsPath = Path.Combine(AppContext.BaseDirectory, $"user.settings.{environment}.json");
             if (!File.Exists(userSettingsPath))
                 throw new FileNotFoundException("user.settings.json bulunamadı", userSettingsPath);
 
-            // 2. auth.settings.json'u yükle
-            var authConfiguration = new ConfigurationBuilder()
+            // 2. user.settings.json'u yükle
+            var userConfiguration = new ConfigurationBuilder()
                 .AddJsonFile(userSettingsPath, optional: false, reloadOnChange: true)
                 .Build();
 
             // 3. gerekiyorsa global config ile birleştir (opsiyonel)
             var mergedConfiguration = new ConfigurationBuilder()
                 .AddConfiguration(baseConfiguration)
-                .AddConfiguration(authConfiguration)
+                .AddConfiguration(userConfiguration)
                 .Build();
 
             // 4. mergedConfiguration'dan config oku

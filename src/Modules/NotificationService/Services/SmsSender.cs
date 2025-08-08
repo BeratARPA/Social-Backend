@@ -1,4 +1,4 @@
-﻿namespace NotificationService.Worker.Services
+﻿namespace NotificationService.Services
 {
     public class SmsSender : ISmsSender
     {

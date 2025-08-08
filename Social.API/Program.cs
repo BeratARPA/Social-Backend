@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NotificationService.DependencyInjection;
 using Prometheus;
 using Serilog;
 using System.Text;
@@ -50,6 +51,7 @@ builder.Services.AddHealthChecks();
 
 builder.Services.AddAuthService(builder.Configuration);
 builder.Services.AddUserService(builder.Configuration);
+builder.Services.AddNotificationService(builder.Configuration);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -82,6 +84,7 @@ using (var scope = app.Services.CreateScope())
 
     serviceProvider.ConfigureUserServiceEventSubscriptions();
     serviceProvider.ConfigureAuthServiceEventSubscriptions();
+    serviceProvider.ConfigureNotificationServiceEventSubscriptions();
 }
 
 app.UseHttpMetrics();
@@ -100,12 +103,12 @@ app.MapHealthChecks("/health", new HealthCheckOptions
 // Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment())
 //{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Social API V1");
-        options.RoutePrefix = string.Empty; // Set Swagger UI at the app's root      
-    });
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Social API V1");
+    options.RoutePrefix = string.Empty; // Set Swagger UI at the app's root      
+});
 //}
 
 app.UseGlobalExceptionMiddleware();

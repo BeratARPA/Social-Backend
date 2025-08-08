@@ -1,8 +1,8 @@
 ﻿using EventBus.Base.Abstraction;
 using EventBus.IntegrationEvents;
-using NotificationService.Worker.Services;
+using NotificationService.Services;
 
-namespace NotificationService.Worker.Events.Handlers
+namespace NotificationService.Events.Handlers
 {
     public class SendVerificationCodeEventHandler : IIntegrationEventHandler<SendVerificationCodeIntegrationEvent>
     {
@@ -26,13 +26,13 @@ namespace NotificationService.Worker.Events.Handlers
         public async Task Handle(SendVerificationCodeIntegrationEvent @event)
         {
             try
-            {           
+            {
                 var templateModel = new { Code = @event.Code };
                 var body = await _templateRenderer.RenderAsync("VerificationCode", templateModel);
 
                 switch (@event.Channel)
                 {
-                    case VerificationChannel.Email:                
+                    case VerificationChannel.Email:
                         await _emailSender.SendAsync(@event.Recipient, "Doğrulama Kodu", body);
                         break;
 
@@ -46,7 +46,7 @@ namespace NotificationService.Worker.Events.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Hata oluştu: {Message}", ex.Message);
+                _logger.LogError(ex, "{Message}", ex.Message);
                 throw;
             }
         }

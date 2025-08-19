@@ -29,9 +29,13 @@ namespace AuthService.Commands.Register
 
         public async Task<AuthResultDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var exists = await _userRepository.ExistsAsync(x => x.Username == request.Username);
-            if (exists)
+            var usernameExists = await _userRepository.ExistsAsync(x => x.Username == request.Username);
+            if (usernameExists)
                 throw new ValidationException("UsernameAlreadyExists");
+
+            var emailExists = await _userRepository.ExistsAsync(x => x.Email == request.Email);
+            if (emailExists)
+                throw new ValidationException("EmailAlreadyExists");
 
             var user = new UserCredential
             {

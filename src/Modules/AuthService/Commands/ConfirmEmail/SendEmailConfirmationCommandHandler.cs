@@ -25,8 +25,8 @@ namespace AuthService.Commands.ConfirmEmail
 
         public async Task<bool> Handle(SendEmailConfirmationCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.FirstOrDefaultAsync(x => x.Email == request.Email);
-            if (user == null)
+            var emailExists = await _userRepository.FirstOrDefaultAsync(x => x.Email == request.Email);
+            if (emailExists == null)
                 throw new NotFoundException("UserNotFound");
 
             var code = new Random().Next(100000, 999999).ToString();

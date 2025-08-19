@@ -25,8 +25,8 @@ namespace AuthService.Commands.ConfirmPhone
 
         public async Task<bool> Handle(SendPhoneConfirmationCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.FirstOrDefaultAsync(x => x.PhoneNumber == request.PhoneNumber);
-            if (user == null)
+            var usernameExists = await _userRepository.ExistsAsync(x => x.PhoneNumber == request.PhoneNumber);
+            if (usernameExists)
                 throw new NotFoundException("UserNotFound");
 
             var code = new Random().Next(100000, 999999).ToString();

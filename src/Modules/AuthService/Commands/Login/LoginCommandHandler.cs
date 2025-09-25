@@ -51,25 +51,27 @@ namespace AuthService.Commands.Login
             var accessToken = _tokenService.GenerateAccessToken(user);
             var refreshToken = _tokenService.GenerateRefreshToken();
 
-            var refresh = new RefreshToken
+            await _refreshTokenRepository.AddAsync(new RefreshToken
             {
                 UserCredentialId = user.Id,
                 Token = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
                 CreatedByIp = request.IpAddress,
                 UserAgent = request.UserAgent,
-            };
+            });
 
-            await _refreshTokenRepository.AddAsync(refresh);
-            await _userRepository.UnitOfWork.SaveEntitiesAsync();
-
-            return new AuthResultDto
+            if (await _userRepository.UnitOfWork.SaveEntitiesAsync())
             {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                Username = user.Username,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(15)
-            };
+                return new AuthResultDto
+                {
+                    AccessToken = accessToken,
+                    RefreshToken = refreshToken,
+                    Username = user.Username,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(15)
+                };
+            }
+
+            return new();
         }
     }
 }

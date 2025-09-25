@@ -24,8 +24,7 @@ namespace AuthService.Commands.Logout
             token.RevokedByIp = request.IpAddress;
             token.UserAgent = request.UserAgent;
 
-            await _refreshTokenRepository.UnitOfWork.SaveEntitiesAsync();
-            return true;
+           return await _refreshTokenRepository.UnitOfWork.SaveEntitiesAsync();         
         }
     }
 }

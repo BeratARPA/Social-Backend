@@ -1,9 +1,11 @@
-﻿using AuthService.Commands.ConfirmEmail;
-using AuthService.Commands.ConfirmPhone;
+﻿using AuthService.Commands.ForgotPassword;
 using AuthService.Commands.Login;
 using AuthService.Commands.Logout;
 using AuthService.Commands.Register;
+using AuthService.Commands.ResetPassword;
 using AuthService.Commands.TokenRefresh;
+using AuthService.Commands.TwoFactor;
+using AuthService.Commands.Verification;
 using AuthService.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -44,46 +46,49 @@ namespace Social.API.Controllers
             var command = new LogoutCommand(request.RefreshToken, GetIp(), GetUserAgent());
             var result = await Mediator.Send(command);
             return Ok(result);
-        } 
-
-        [AllowAnonymous]
-        [HttpPost("send-email-verification")]
-        public async Task<IActionResult> SendEmailConfirmation([FromBody] SendEmailConfirmationRequestDto request)
-        {
-            var command = new SendEmailConfirmationCommand(request.Email, GetIp(), GetUserAgent());
-            var result = await Mediator.Send(command);
-            return Ok(result);
         }
 
         [AllowAnonymous]
-        [HttpPost("verify-email")]
-        public async Task<IActionResult> ConfirmEmail([FromBody] ConfirmEmailRequestDto request)
+        [HttpPost("send-verification")]
+        public async Task<IActionResult> SendVerification([FromBody] SendVerificationRequestDto request)
         {
-            var command = new ConfirmEmailCommand(request.Email, request.Code, GetIp(), GetUserAgent());
+            var command = new SendVerificationCommand(request.VerificationChannel, request.VerificationType, request.Target, GetIp(), GetUserAgent());
             var result = await Mediator.Send(command);
             return Ok(result);
         }
-  
-        [HttpPost("send-phone-verification")]
-        public async Task<IActionResult> SendPhoneVerification([FromBody] SendPhoneConfirmationRequestDto request)
-        {
-            var command = new SendPhoneConfirmationCommand(request.PhoneNumber, GetIp(), GetUserAgent());
-            var result = await Mediator.Send(command);
-            return Ok(result);
-        }     
 
-        [HttpPost("verify-phone")]
-        public async Task<IActionResult> VerifyPhone([FromBody] ConfirmPhoneRequestDto request)
+        [AllowAnonymous]
+        [HttpPost("verify-code")]
+        public async Task<IActionResult> VerifyCode([FromBody] VerifyCodeRequestDto request)
         {
-            var command = new ConfirmPhoneCommand(request.PhoneNumber, request.Code, GetIp(), GetUserAgent());
+            var command = new VerifyCodeCommand(request.VerificationChannel, request.VerificationType, request.Target, request.Code, GetIp(), GetUserAgent());
             var result = await Mediator.Send(command);
             return Ok(result);
         }
-     
+
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto request)
+        {
+            var command = new ForgotPasswordCommand(request.Email, request.NewPassword, request.ConfirmPassword, request.VerificationCode, GetIp(), GetUserAgent());
+            var result = await Mediator.Send(command);
+            return Ok(result);
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDto request)
+        {
+            var command = new ResetPasswordCommand(GetUserId(), request.CurrentPassword, request.NewPassword, request.ConfirmPassword, GetIp(), GetUserAgent());
+            var result = await Mediator.Send(command);
+            return Ok(result);
+        }
+
         [HttpPost("enable-2fa")]
-        public async Task<IActionResult> EnableTwoFactor()
-        {   
-            return Ok();
+        public async Task<IActionResult> EnableTwoFactor([FromBody] EnableTwoFactorRequestDto request)
+        {
+            var command = new EnableTwoFactorCommand(GetUserId(), request.Enable, GetIp(), GetUserAgent());
+            var result = await Mediator.Send(command);
+            return Ok(result);
         }
     }
 }

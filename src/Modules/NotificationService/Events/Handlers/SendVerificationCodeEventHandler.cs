@@ -28,16 +28,17 @@ namespace NotificationService.Events.Handlers
             try
             {
                 var templateModel = new { Code = @event.Code };
-                var body = await _templateRenderer.RenderAsync("VerificationCode", templateModel);
+                var (templateName, subject) = GetTemplateDetail(@event.VerificationType);
+                var body = await _templateRenderer.RenderAsync(templateName, templateModel);
 
-                switch (@event.Channel)
+                switch (@event.VerificationChannel)
                 {
                     case VerificationChannel.Email:
-                        await _emailSender.SendAsync(@event.Recipient, "Doğrulama Kodu", body);
+                        await _emailSender.SendAsync(@event.Recipient, subject, body);
                         break;
 
                     case VerificationChannel.Sms:
-                        await _smsSender.SendAsync(@event.Recipient, @event.Code);
+                        await _smsSender.SendAsync(@event.Recipient, body);
                         break;
 
                     default:
@@ -49,6 +50,17 @@ namespace NotificationService.Events.Handlers
                 _logger.LogError(ex, "{Message}", ex.Message);
                 throw;
             }
+        }
+
+        private (string, string) GetTemplateDetail(VerificationType verificationType)
+        {
+            return verificationType switch
+            {
+                VerificationType.VerifyEmail => ("VerificationCodeEmail", "Email Doğrulama"),
+                VerificationType.VerifyPhone => ("VerificationCodePhone", "Telefon Doğrulama"),
+                VerificationType.ResetPassword => ("VerificationCodeResetPassword", "Şifre Sıfırlama"),
+                _ => throw new InvalidOperationException("Desteklenmeyen doğrulama türü"),
+            };
         }
     }
 }

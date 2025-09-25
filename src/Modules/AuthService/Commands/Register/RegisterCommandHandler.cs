@@ -2,7 +2,6 @@
 using AuthService.Data.Repositories;
 using AuthService.Dtos;
 using AuthService.Services;
-using EventBus.Base.Abstraction;
 using ExceptionHandling.Exceptions;
 using MediatR;
 
@@ -13,18 +12,15 @@ namespace AuthService.Commands.Register
         private readonly IGenericRepository<UserCredential> _userRepository;
         private readonly IGenericRepository<RefreshToken> _refreshTokenRepository;
         private readonly ITokenService _tokenService;
-        private readonly IEventBus _eventBus;
 
         public RegisterCommandHandler(
             IGenericRepository<UserCredential> userRepository,
             IGenericRepository<RefreshToken> refreshTokenRepository,
-            ITokenService tokenService,
-            IEventBus eventBus)
+            ITokenService tokenService)
         {
             _userRepository = userRepository;
             _refreshTokenRepository = refreshTokenRepository;
             _tokenService = tokenService;
-            _eventBus = eventBus;
         }
 
         public async Task<AuthResultDto> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -56,15 +52,18 @@ namespace AuthService.Commands.Register
                 UserAgent = request.UserAgent,
             });
 
-            await _userRepository.UnitOfWork.SaveEntitiesAsync();
-
-            return new AuthResultDto
+            if (await _userRepository.UnitOfWork.SaveEntitiesAsync())
             {
-                AccessToken = _tokenService.GenerateAccessToken(user),
-                RefreshToken = refreshToken,
-                Username = user.Username,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(15)
-            };
+                return new AuthResultDto
+                {
+                    AccessToken = _tokenService.GenerateAccessToken(user),
+                    RefreshToken = refreshToken,
+                    Username = user.Username,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(15)
+                };
+            }
+
+            return new();
         }
     }
 }

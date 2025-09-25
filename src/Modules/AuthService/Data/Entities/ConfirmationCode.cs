@@ -1,9 +1,12 @@
-﻿namespace AuthService.Data.Entities
+﻿using EventBus.IntegrationEvents;
+
+namespace AuthService.Data.Entities
 {
     public class ConfirmationCode : BaseEntity
     {
-        public ConfirmationType Type { get; set; }
-        public string Target { get; set; } = null!; // email adresi, telefon numarası vs.
+        public VerificationChannel VerificationChannel { get; set; }
+        public VerificationType VerificationType { get; set; }
+        public string Target { get; set; } = null!;
         public string Code { get; set; } = null!;
         public DateTime ExpiresAt { get; set; }
         public bool IsUsed { get; set; }

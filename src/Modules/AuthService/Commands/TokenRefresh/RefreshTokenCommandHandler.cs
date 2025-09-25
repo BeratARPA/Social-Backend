@@ -54,15 +54,18 @@ namespace AuthService.Commands.TokenRefresh
                 UserAgent = request.UserAgent
             });
 
-            await _refreshTokenRepository.UnitOfWork.SaveEntitiesAsync();
-
-            return new AuthResultDto
+            if (await _refreshTokenRepository.UnitOfWork.SaveEntitiesAsync())
             {
-                AccessToken = newAccessToken,
-                RefreshToken = newRefreshToken,
-                Username = user.Username,
-                ExpiresAt = DateTime.UtcNow.AddMinutes(15)
-            };
+                return new AuthResultDto
+                {
+                    AccessToken = newAccessToken,
+                    RefreshToken = newRefreshToken,
+                    Username = user.Username,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(15)
+                };
+            }
+
+            return new();
         }
     }
 }

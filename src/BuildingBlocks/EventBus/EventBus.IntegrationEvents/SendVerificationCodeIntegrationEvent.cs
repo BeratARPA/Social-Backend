@@ -4,13 +4,15 @@ namespace EventBus.IntegrationEvents
 {
     public class SendVerificationCodeIntegrationEvent : IntegrationEvent
     {
-        public VerificationChannel Channel { get; set; }
+        public VerificationChannel VerificationChannel { get; set; }
+        public VerificationType VerificationType { get; set; }
         public string Recipient { get; set; }
         public string Code { get; set; }
 
-        public SendVerificationCodeIntegrationEvent(VerificationChannel channel, string recipient, string code)
+        public SendVerificationCodeIntegrationEvent(VerificationChannel verificationChannel, VerificationType verificationType, string recipient, string code)
         {
-            Channel = channel;
+            VerificationChannel = verificationChannel;
+            VerificationType = verificationType;
             Recipient = recipient;
             Code = code;
         }

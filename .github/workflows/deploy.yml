@@ -1,0 +1,116 @@
+name: Build and Deploy to IIS with Rollback
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    env:
+      API_PATH: 'C:\inetpub\wwwroot\SocialApi'
+      BACKUP_DIR: 'C:\inetpub\wwwroot\Backup'
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Restore Dependencies
+      run: dotnet restore Social-Backend.sln
+
+    - name: Run Tests
+      run: dotnet test Social-Backend.sln
+
+    - name: Publish Api  
+      run: dotnet publish src/Social.API/Social.API.csproj -c Release -o ./publish/Api
+
+    - name: Deploy Api
+      run: |
+        Import-Module WebAdministration
+
+        if ((Get-WebAppPoolState -Name "SocialApi").Value -eq "Started") {
+          Stop-WebAppPool -Name "SocialApi"
+        }
+        Start-Sleep -Seconds 5
+
+        mkdir -Force $env:BACKUP_DIR
+        $timestamp = Get-Date -Format "yyyyMMddHHmmss"
+        if (Test-Path "$env:API_PATH\*") {
+          Compress-Archive "$env:API_PATH\*" "$env:BACKUP_DIR\Api_$timestamp.zip" -Force
+        }
+
+        $result = robocopy "./publish/Api" "$env:API_PATH" /MIR /NFL /NDL /R:3 /W:5
+        
+        $exitCode = $LASTEXITCODE
+        Write-Host "Robocopy exit code: $exitCode"
+        
+        Start-WebAppPool -Name "SocialApi"
+        
+        if ($exitCode -ge 8) {
+         throw "Robocopy failed with exit code $exitCode"
+        } else {
+          exit 0
+        }
+      shell: powershell
+
+    - name: Wait for Services
+      run: Start-Sleep -Seconds 10
+      shell: powershell
+
+    - name: Health Check
+      run: |
+        Start-Sleep -Seconds 15
+        $urls = @(
+          "https://api.iscsocial.com/health"
+        )
+        $allHealthy = $true
+        foreach ($url in $urls) {
+          $ok = $false
+          for ($i=1; $i -le 5; $i++) {
+            try {
+              $res = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 30
+              if ($res.StatusCode -eq 200 -and $res.Content -match '"status"\s*:\s*"Healthy"') {
+                $ok = $true; break
+              }
+            } catch {}
+            Start-Sleep -Seconds 10
+          }
+          if (-not $ok) { $allHealthy = $false }
+        }
+        if (-not $allHealthy) { throw "Health check failed" }
+      shell: powershell
+
+    - name: Rollback on Failure
+      if: failure()
+      run: |
+        Import-Module WebAdministration
+        $appPools = @("SocialApi")
+        foreach ($pool in $appPools) {
+          if ((Get-WebAppPoolState -Name $pool).Value -eq "Started") {
+            Stop-WebAppPool -Name $pool
+          }
+        }
+        Start-Sleep -Seconds 5
+        Get-Process w3wp -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+        Start-Sleep -Seconds 5
+
+        $apiBackup = Get-ChildItem $env:BACKUP_DIR | Where-Object { $_.Name -like "Api*" } | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+
+        if ($apiBackup) {
+          Expand-Archive -Path "$env:BACKUP_DIR\$($apiBackup.Name)" -DestinationPath "$env:TEMP\Api_restore" -Force
+          $result = robocopy "$env:TEMP\Api_restore" "$env:API_PATH" /MIR /NFL /NDL
+          Remove-Item -Recurse -Force "$env:TEMP\Api_restore"
+        }
+
+        foreach ($pool in $appPools) {
+          Start-WebAppPool -Name $pool
+        }
+
+        Write-Host "Rollback completed"
+        exit 0
+      shell: powershell
+      continue-on-error: true

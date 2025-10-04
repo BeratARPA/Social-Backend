@@ -1,0 +1,13 @@
+{
+  "SmtpSettings": {
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "Username": "help.iscsocialteam@gmail.com",
+    "Password": "xioy vqyk pvtm wmer",
+    "From": "help.iscsocialteam@gmail.com"
+  },
+  "WhatsAppSettings": {
+    "BaseUrl": "https://wpapi.pro/api/v1/wp",
+    "ApiKey": "sk_c2db1f925eca40a3b506ea8d35c69595_1759253703_e5e607fc0773a704"
+  }
+}

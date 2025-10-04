@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net9.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+	  <PackageReference Include="MediatR" Version="13.0.0" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
+	  <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.8" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.8" />
+	  <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.Base\EventBus.Base.csproj" />
+	  <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.Factory\EventBus.Factory.csproj" />
+	  <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.IntegrationEvents\EventBus.IntegrationEvents.csproj" />
+	  <ProjectReference Include="..\..\BuildingBlocks\ExceptionHandling\ExceptionHandling.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="auth.settings.Development.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	  <None Update="auth.settings.Production.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Queries\" />
+	</ItemGroup>
+
+</Project>
